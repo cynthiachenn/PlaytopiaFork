@@ -65,11 +65,7 @@ def get_dev_games(game_id):
 def get_dev_games(developer_id):
      # get a cursor object from the database
     cursor = db.get_db().cursor()
-    query = '''
-        SELECT name FROM games WHERE developer_id = %s
-    '''
-    dev_id = developer_id
-    cursor.execute(query, dev_id)
+    cursor.execute('SELECT name FROM games WHERE developer_id = {0}'.format(developer_id))
 
     # grab the column headers from the returned data
     column_headers = [x[0] for x in cursor.description]
@@ -88,31 +84,50 @@ def get_dev_games(developer_id):
 
     return jsonify(json_data)
 
+# Returns a list of all games made by a certain game developer
+@games.route('/genres', methods=['GET'])
+def get_genres():
+     # get a cursor object from the database
+    cursor = db.get_db().cursor()
+    cursor.execute('SELECT * from genres')
 
-# # get the top 10 best selling games from the database
-# @games.route('/best_selling')
-# def get_best_selling():
-#     cursor = db.get_db().cursor()
-#     query = '''
-#         SELECT name
-#         FROM games
-#         ORDER BY list_price DESC
-#         LIMIT 10
-#     '''
-#     cursor.execute(query)
-#        # grab the column headers from the returned data
-#     column_headers = [x[0] for x in cursor.description]
+    # grab the column headers from the returned data
+    column_headers = [x[0] for x in cursor.description]
 
-#     # create an empty dictionary object to use in 
-#     # putting column headers together with data
-#     json_data = []
+    # create an empty dictionary object to use in 
+    # putting column headers together with data
+    json_data = []
 
-#     # fetch all the data from the cursor
-#     theData = cursor.fetchall()
+    # fetch all the data from the cursor
+    theData = cursor.fetchall()
 
-#     # for each of the rows, zip the data elements together with
-#     # the column headers. 
-#     for row in theData:
-#         json_data.append(dict(zip(column_headers, row)))
+    # for each of the rows, zip the data elements together with
+    # the column headers. 
+    for row in theData:
+        json_data.append(dict(zip(column_headers, row)))
 
-#     return jsonify(json_data)
+    return jsonify(json_data)
+
+# Returns a list of all games made by a certain game developer
+@games.route('<genre_id>', methods=['GET'])
+def get_dev_games(genre_id):
+     # get a cursor object from the database
+    cursor = db.get_db().cursor()
+    cursor.execute('SELECT name FROM games JOIN game_genres ON (game_id) WHERE genre_id = {0}'.format(genre_id))
+
+    # grab the column headers from the returned data
+    column_headers = [x[0] for x in cursor.description]
+
+    # create an empty dictionary object to use in 
+    # putting column headers together with data
+    json_data = []
+
+    # fetch all the data from the cursor
+    theData = cursor.fetchall()
+
+    # for each of the rows, zip the data elements together with
+    # the column headers. 
+    for row in theData:
+        json_data.append(dict(zip(column_headers, row)))
+
+    return jsonify(json_data)
