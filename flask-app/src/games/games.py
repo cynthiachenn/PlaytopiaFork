@@ -43,7 +43,7 @@ def add_new_game():
     sales_price = req_data['sales_price']
     cust_rating = req_data['cust_rating']
     age_rating = req_data['age_rating']
-    console = req_data['console']
+    game_console = req_data['game_console']
     developer_id = req_data['developer_id']
     distributor_id = req_data['distributor_id']
 
@@ -54,7 +54,7 @@ def add_new_game():
     insert_stmt += str(sales_price) + '", "'
     insert_stmt += str(cust_rating) + '", "'
     insert_stmt += age_rating + '", "' 
-    insert_stmt += console + '", "'
+    insert_stmt += game_console + '", "'
     insert_stmt += str(developer_id) + '", "'
     insert_stmt += str(distributor_id) + '")'
 
@@ -90,16 +90,17 @@ def get_game_id(game_id):
     return jsonify(json_data)
 
 # Updates the price of a game
-@games.route('/<game_id>', methods=['PUT'])
-def update_game_price(game_id):
+@games.route('/games', methods=['PUT'])
+def update_game_price():
     current_app.logger.info('Processing form data')
     req_data = request.get_json()
     current_app.logger.info(req_data)
 
-    new_price = req_data['sales_price']
+    og_game_id = req_data['og_game_id']
+    new_sales_price = req_data['new_sales_price']
 
     query = 'UPDATE Games SET sales_price = "' 
-    query += str(new_price) + '" WHERE game_id = {0}'.format(game_id)
+    query += str(new_sales_price) + '" WHERE game_id = "' + str(og_game_id) + '"'
     
     cursor = db.get_db().cursor()
     cursor.execute(query)
